@@ -35,10 +35,13 @@ def upload_file():
 def analyze_file(filename):
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     data = pd.read_csv(file_path)
-    
+
     # Описова статистика
     description = data.describe(include='all').to_html()
-    
+
+    # Визначення кількості числових колонок
+    numeric_columns = len(data.select_dtypes(include=['float64', 'int64']).columns)
+
     # Побудова графіків
     visualizations = []
     for column in data.select_dtypes(include=['float64', 'int64']).columns:
@@ -47,10 +50,15 @@ def analyze_file(filename):
         fig.write_html(graph_path)
         visualizations.append(f'{column}_plot.html')
 
-    return render_template('analysis.html', tables=[description], columns=data.columns, graphs=visualizations)
+    # Передача змінних у шаблон
+    return render_template('analysis.html',
+                           tables=[description],
+                           data=data,
+                           numeric_columns=numeric_columns,
+                           graphs=visualizations)
 
 if __name__ == '__main__':
+    # Створення папки для завантажень, якщо вона не існує
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
     app.run(debug=True)
-

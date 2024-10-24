@@ -20,14 +20,30 @@
             color: #333;
             font-size: 2.5rem;
             margin-bottom: 20px;
+            animation: fadeInDown 1s ease-in-out;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #ff6f61, #ff8a65, #ffa726);
+            border-radius: 50%;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite ease-in-out;
         }
 
         .upload-container {
             background-color: #fff;
             padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             text-align: center;
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .upload-container:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
         }
 
         .upload-container input[type="file"] {
@@ -37,49 +53,89 @@
         .upload-container label {
             background-color: #007bff;
             color: white;
-            padding: 10px 20px;
-            font-size: 1rem;
-            border-radius: 5px;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            border-radius: 30px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
         .upload-container label:hover {
             background-color: #0056b3;
+            transform: scale(1.05);
         }
 
         .upload-container input[type="submit"] {
             background-color: #28a745;
             color: white;
-            padding: 10px 20px;
-            font-size: 1rem;
+            padding: 12px 24px;
+            font-size: 1.1rem;
             border: none;
-            border-radius: 5px;
+            border-radius: 30px;
             cursor: pointer;
             margin-top: 20px;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
         .upload-container input[type="submit"]:hover {
             background-color: #218838;
+            transform: scale(1.05);
         }
 
         .file-name {
             margin-top: 15px;
             font-size: 1.2rem;
             color: #555;
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
 
         footer {
             margin-top: 20px;
             color: #777;
             font-size: 0.9rem;
+            animation: fadeInUp 1s ease-in-out;
+        }
+
+        @keyframes fadeInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
         }
 
     </style>
 </head>
 <body>
+    <!-- Логотип -->
+    <div class="logo"></div>
+
     <h1>Upload your CSV file</h1>
+
     <div class="upload-container">
         <form action="/" method="post" enctype="multipart/form-data">
             <input type="file" name="file" id="file-input">
@@ -101,8 +157,8 @@
         fileInput.addEventListener('change', function() {
             const fileName = fileInput.files[0] ? fileInput.files[0].name : 'No file chosen';
             fileNameDisplay.textContent = fileName;
+            fileNameDisplay.style.opacity = 1;
         });
     </script>
 </body>
 </html>
-
