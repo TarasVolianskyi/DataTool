@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Analysis</title>
+</head>
+<body>
+    <h1>Analysis of the file</h1>
+    
+    <!-- Описова статистика -->
+    <h2>Descriptive Statistics</h2>
+    <div>
+        {% for table in tables %}
+            {{ table | safe }}
+        {% endfor %}
+    </div>
+    
+    <!-- Візуалізації -->
+    <h2>Visualizations</h2>
+    <div>
+        {% for graph in graphs %}
+            <iframe src="/static/{{ graph }}" width="100%" height="400px"></iframe>
+        {% endfor %}
+    </div>
+</body>
+</html>
+
