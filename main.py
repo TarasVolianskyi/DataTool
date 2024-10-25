@@ -47,27 +47,49 @@ def analyze_file(filename):
     data = pd.read_csv(file_path)
 
     # Описова статистика
+    # Описова статистика
     description = data.describe(include='all').to_html()
 
-    # Визначення кількості числових колонок
-    numeric_columns = len(data.select_dtypes(include=['float64', 'int64']).columns)
+    # Визначення ключових показників
+    total_stores = len(data['Store'].unique()) if 'Store' in data.columns else 'N/A'
+    total_sales = data['Sales'].sum() if 'Sales' in data.columns else 'N/A'
+    total_profit = data['Profit'].sum() if 'Profit' in data.columns else 'N/A'
+    margin_percentage = (total_profit / total_sales * 100) if total_sales != 'N/A' and total_sales > 0 else 'N/A'
+    total_orders = len(data) if 'Order ID' in data.columns else 'N/A'
+    return_percentage = (data['Returns'].mean() * 100) if 'Returns' in data.columns else 'N/A'
 
-    # Побудова графіків
+    # Побудова графіків для аналізу
     visualizations = []
-    for column in data.select_dtypes(include=['float64', 'int64']).columns:
-        fig = px.histogram(data, x=column, title=f'Distribution of {column}')
-        graph_path = os.path.join('static', f'{column}_plot.html')
+
+    # Діаграма продажів по категоріях товарів
+    if 'Product Category' in data.columns and 'Sales' in data.columns:
+        fig = px.bar(data.groupby('Product Category')['Sales'].sum().reset_index(),
+                     x='Product Category', y='Sales', title='Sales by Category')
+        graph_path = os.path.join('static', 'sales_by_category_plot.html')
         fig.write_html(graph_path)
-        visualizations.append(f'{column}_plot.html')
+        visualizations.append('sales_by_category_plot.html')
+
+    # Діаграма продажів по магазинах
+    if 'Store' in data.columns and 'Sales' in data.columns:
+        fig = px.bar(data.groupby('Store')['Sales'].sum().reset_index(),
+                     x='Store', y='Sales', title='Sales by Store')
+        graph_path = os.path.join('static', 'sales_by_store_plot.html')
+        fig.write_html(graph_path)
+        visualizations.append('sales_by_store_plot.html')
 
     # Передача змінних у шаблон
     return render_template('analysis.html',
-                           tables=[description],
                            data=data,
-                           numeric_columns=numeric_columns,
+                           total_stores=total_stores,
+                           total_sales=total_sales,
+                           total_profit=total_profit,
+                           margin_percentage=margin_percentage,
+                           total_orders=total_orders,
+                           return_percentage=return_percentage,
                            graphs=visualizations)
 
 if __name__ == '__main__':
+    # Створення папки для завантажень, якщо вона не існує
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
     app.run(debug=True)
