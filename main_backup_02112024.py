@@ -1,6 +1,5 @@
 import os
 import pandas as pd
-import plotly.express as px
 from flask import Flask, request, render_template, redirect, url_for
 from werkzeug.utils import secure_filename
 from sectors import SECTOR_COLUMNS  # Імпорт даних про сфери
@@ -39,17 +38,8 @@ def analyze_file(filename):
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     data = pd.read_csv(file_path)
 
-    # Генерація лінійного графіка для кліків по днях
-    if 'Purchase Date' in data.columns and 'Clicks' in data.columns:
-        data['Purchase Date'] = pd.to_datetime(data['Purchase Date'])
-        clicks_by_date = data.groupby(data['Purchase Date'].dt.date)['Clicks'].sum().reset_index()
-        fig = px.line(clicks_by_date, x='Purchase Date', y='Clicks', title='Clicks by Date', line_shape='linear')
-        fig.update_traces(line=dict(color='blue'))  # Синій колір для лінії
-        graph_path = os.path.join('static', 'clicks_by_date_plot.html')
-        fig.write_html(graph_path)
-
-    # Передача змінних у шаблон для відображення таблиці та графіка
-    return render_template('analysis.html', table=data.to_html(index=False), clicks_by_date_graph='clicks_by_date_plot.html')
+    # Передача змінних у шаблон для відображення таблиці
+    return render_template('analysis.html', table=data.to_html(index=False))
 
 if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
